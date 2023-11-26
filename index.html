@@ -11,7 +11,7 @@
       class="row-span-2 bg-emerald-100 flex flex-col justify-between items-center py-5"
     >
       <h1 class="text-2xl font-bold text-center">Investment Calculator</h1>
-      <form class="w-full px-4">
+      <form id="investment-form" class="w-full px-4">
         <div class="flex flex-col w-full my-4">
           <label for="initial-investment" class="font-semibold text-gray-700"
             >Initial Investment</label
@@ -27,6 +27,7 @@
               type="text"
               id="initial-investment"
               class="w-5/6 rounded-r-lg px-2"
+              required
               placeholder="0.00"
             />
           </div>
@@ -57,7 +58,12 @@
             >Duration</label
           >
           <div class="flex">
-            <input type="text" id="duration" class="w-2/3 rounded-l-lg px-2" />
+            <input
+              type="text"
+              id="duration"
+              class="w-2/3 rounded-l-lg px-2"
+              required
+            />
 
             <select
               id="duration-type"
@@ -82,7 +88,7 @@
               disabled
               class="text-center w-1/6 rounded-l-lg bg-emerald-500 border-r-2 border-emerald-500"
             />
-            <input type="text" id="yield-rate" class="w-1/2 px-2" />
+            <input type="text" id="yield-rate" class="w-1/2 px-2" required />
             <select
               name="yield-rate"
               id="yield-rate-type"
@@ -110,6 +116,7 @@
               type="text"
               id="profit-tax"
               class="w-5/6 rounded-r-lg px-2"
+              required
             />
           </div>
           <!-- <input type="text" value="mensal" class="w-2/6" /> -->
@@ -118,7 +125,9 @@
 
       <div class="w-full h-12 flex justify-evenly my-4 gap-4 px-6">
         <button
+          id="calculate-results"
           class="w-1/2 rounded-lg bg-emerald-500 px-6 font-bold text-slate-200 hover:bg-emerald-700"
+          form="investment-form"
         >
           Calculate
         </button>
@@ -133,5 +142,6 @@
     <main>
       <p>Resultados</p>
     </main>
+    <script src="./main.js" type="module"></script>
   </body>
 </html>
