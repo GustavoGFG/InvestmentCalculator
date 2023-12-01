@@ -1,7 +1,14 @@
 import { generateReturnsArray } from './src/investmentGoals';
+import { Chart } from 'chart.js/auto';
 
 const form = document.getElementById('investment-form');
 const clearFormButton = document.getElementById('clear-form');
+
+const finalMoneyChart = document.getElementById('final-money-distribution');
+const progressionChart = document.getElementById('progression');
+
+let doughnutChartReference = {};
+let progressionChartReference = {};
 
 function renderProgression(evt) {
   evt.preventDefault();
@@ -35,6 +42,85 @@ function renderProgression(evt) {
   );
 
   console.log(returnsArray);
+  resetCharts();
+
+  const finalInvestmentObject = returnsArray[returnsArray.length - 1];
+
+  doughnutChartReference = new Chart(finalMoneyChart, {
+    type: 'doughnut',
+    data: {
+      labels: ['Total Invested', 'Return', 'Tax'],
+      datasets: [
+        {
+          data: [
+            finalInvestmentObject.investedAmount.toFixed(2),
+            (
+              finalInvestmentObject.totalInterestReturns *
+              (1 - taxRate / 100)
+            ).toFixed(2),
+            (
+              finalInvestmentObject.totalInterestReturns *
+              (taxRate / 100)
+            ).toFixed(2),
+          ],
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)',
+          ],
+          hoverOffset: 4,
+        },
+      ],
+    },
+  });
+
+  progressionChartReference = new Chart(progressionChart, {
+    type: 'bar',
+    data: {
+      labels: returnsArray.map(investmentObject => investmentObject.month),
+      datasets: [
+        {
+          label: 'Total Investido',
+          data: returnsArray.map(investmentObject =>
+            investmentObject.investedAmount.toFixed(2)
+          ),
+          backgroundColor: 'rgb(255, 99, 132)',
+        },
+        {
+          label: 'Retorno do Investimento',
+          data: returnsArray.map(investmentObject =>
+            investmentObject.interestReturns.toFixed(2)
+          ),
+          backgroundColor: 'rgb(54, 162, 235)',
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
+        },
+        y: {
+          stacked: true,
+        },
+      },
+    },
+  });
+}
+
+function isObjectEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+function resetCharts() {
+  if (
+    !isObjectEmpty(doughnutChartReference) &&
+    !isObjectEmpty(progressionChartReference)
+  ) {
+    doughnutChartReference.destroy();
+    progressionChartReference.destroy();
+  }
 }
 
 function clearForm() {
@@ -49,6 +135,7 @@ function clearForm() {
     errorInput.classList.remove('error');
     errorInput.parentElement.querySelector('p').remove();
   }
+  resetCharts();
 }
 
 function validadeInput(evt) {
