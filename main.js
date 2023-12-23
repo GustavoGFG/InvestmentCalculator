@@ -1,5 +1,6 @@
 import { generateReturnsArray } from './src/investmentGoals';
 import { Chart } from 'chart.js/auto';
+import { createTable } from './src/table';
 
 const form = document.getElementById('investment-form');
 const clearFormButton = document.getElementById('clear-form');
@@ -9,6 +10,30 @@ const progressionChart = document.getElementById('progression');
 
 let doughnutChartReference = {};
 let progressionChartReference = {};
+
+const columnsArray = [
+  { columnLabel: 'Mês', accessor: 'month' },
+  {
+    columnLabel: 'Total Investido',
+    accessor: 'investedAmount',
+    format: numberInfo => convertToCurrency(numberInfo),
+  },
+  {
+    columnLabel: 'Rendimento Mensal',
+    accessor: 'interestReturns',
+    format: numberInfo => convertToCurrency(numberInfo),
+  },
+  {
+    columnLabel: 'Rendimento Total',
+    accessor: 'totalInterestReturns',
+    format: numberInfo => convertToCurrency(numberInfo),
+  },
+  {
+    columnLabel: 'Quantia Total',
+    accessor: 'totalAmount',
+    format: numberInfo => convertToCurrency(numberInfo),
+  },
+];
 
 function renderProgression(evt) {
   evt.preventDefault();
@@ -43,6 +68,7 @@ function renderProgression(evt) {
 
   console.log(returnsArray);
   resetCharts();
+  resetTable();
 
   const finalInvestmentObject = returnsArray[returnsArray.length - 1];
 
@@ -71,6 +97,13 @@ function renderProgression(evt) {
           hoverOffset: 4,
         },
       ],
+    },
+    options: {
+      plugins: {
+        legend: {
+          position: 'right',
+        },
+      },
     },
   });
 
@@ -107,6 +140,8 @@ function renderProgression(evt) {
       },
     },
   });
+
+  createTable(columnsArray, returnsArray, 'results-table');
 }
 
 function isObjectEmpty(obj) {
@@ -122,6 +157,9 @@ function resetCharts() {
     progressionChartReference.destroy();
   }
 }
+function resetTable() {
+  document.getElementById('results-table').innerHTML = '';
+}
 
 function clearForm() {
   form['initial-investment'].value = '';
@@ -136,6 +174,7 @@ function clearForm() {
     errorInput.parentElement.querySelector('p').remove();
   }
   resetCharts();
+  resetTable();
 }
 
 function validadeInput(evt) {
@@ -173,5 +212,33 @@ for (const formElement of form) {
   }
 }
 
-// form.addEventListener('submit', renderProgression);
+const mainEl = document.querySelector('main');
+const carouselEl = document.getElementById('carousel');
+const previousBtn = document.getElementById('slide-arrow-previous');
+const nextBtn = document.getElementById('slide-arrow-next');
+
+nextBtn.addEventListener('click', () => {
+  carouselEl.scrollLeft += mainEl.clientWidth;
+});
+
+previousBtn.addEventListener('click', () => {
+  carouselEl.scrollLeft -= mainEl.clientWidth;
+  console.log('Olá');
+});
+
+form.addEventListener('submit', renderProgression);
 clearFormButton.addEventListener('click', clearForm);
+
+function convertToCurrency(value) {
+  return value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  });
+}
+
+const mobileMenuBtn = document.getElementById('menu-btn');
+mobileMenuBtn.addEventListener('click', () => {
+  document.getElementsByTagName('aside')[0].classList.toggle('mobile:hidden');
+  document.getElementById('menu-icon').classList.toggle('hidden');
+  document.getElementById('close-icon').classList.toggle('hidden');
+});
